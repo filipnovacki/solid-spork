@@ -16,6 +16,8 @@
 
 \newcommand{\entry}[4]{\textbf{#1}\markboth{#1}{#1}\ {(#2)}\ \textit{#3}\ $\bullet$\ {#4}} % Defines the command to print each word on the page, \markboth{}{} prints the first word on the page in the top left header and the last word in the top right
 
+\newcommand{\entrys}[5]{\textbf{#1}\markboth{#1}{#1}\ {(#2)}\ \textit{#3}\
+$\bullet$\ {#4} -- \textit{#5}} % Defines the command to print each word on the page, \markboth{}{} prints the first word on the page in the top left header and the last word in the top right
 %----------------------------------------------------------------------------------------
 
 \begin{document}
@@ -28,7 +30,10 @@
 
 \begin{multicols}{2}
 
-\entry{Aardvark}{ahrd-vahrk}{Noun}{A nocturnal badger-sized burrowing mammal of Africa, with long ears, a tubular snout, and a long extensible tongue, feeding on ants and termites. Also called antbear.}
+\entrys{Aardvark}{ahrd-vahrk}{Noun}{A nocturnal badger-sized burrowing mammal of
+	Africa, with long ears, a tubular snout, and a long extensible tongue,
+	feeding on ants and termites. Also called antbear.}{I found an aardvark
+	in nature}
 
 \entry{Abbreviated}{uh-bree-vee-ey-tid}{Adjective}{Constituting a shorter or smaller version of}
 
