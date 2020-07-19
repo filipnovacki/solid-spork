@@ -20,31 +20,43 @@
     </p>
   </div>
   </div>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul>
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
 </section>
 
 <section class="section">
-<form class="form" method='POST'>
-	<div class='field'>
-		<label class="label">Text for analysis:</label>
-		<textarea class="textarea" rows="5" cols="7" name="inputtext"
-				 placeholder="Input text here"></textarea>
-	</div>
-	<div class='field'>
-	<label class="label">Enter dicitionary name:</label>
-	    <input class="input" type="text" placeholder="Text input"
-	    	value="Dictionary">
-  	    <p class="help is-success">This dictionary exists and will add
-	    words to existing dictionary</p>
-	</div>
 
-	<div class='field'>
-		<button class="button is-success">Start analysis</button>
-	</div>
-	<!-- <div class='field'> -->
-	<!-- </div> -->
-	<!-- <div class='field'> -->
-	<!-- </div> -->
-</form>
+<!-- <form class="form" method='POST'> -->
+<!-- 	<div class='field'> -->
+<!-- 		<label class="label">Text for analysis:</label> -->
+<!-- 		<textarea class="textarea" rows="5" cols="7" name="inputtext" -->
+<!-- 				 placeholder="Input text here"></textarea> -->
+<!-- 	</div> -->
+<!-- 	<div class='field'> -->
+<!-- 	<label class="label">Enter dicitionary name:</label> -->
+<!-- 	    <input class="input" type="text" placeholder="Text input" -->
+<!-- 	    	value="Dictionary"> -->
+<!--   	    <p class="help is-success">This dictionary exists and will add -->
+<!-- 	    words to existing dictionary</p> -->
+<!-- 	</div> -->
+<!-- 	<div class='field'> -->
+<!-- 		<button class="button is-success">Start analysis</button> -->
+<!-- 	</div> -->
+<!-- 	<!-1- <div class='field'> -1-> -->
+<!-- 	<!-1- </div> -1-> -->
+<!-- 	<!-1- <div class='field'> -1-> -->
+<!-- 	<!-1- </div> -1-> -->
+<!-- </form> -->
+
+{% block content %}{% endblock %}
+
 </section>
 
 
