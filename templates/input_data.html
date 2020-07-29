@@ -1,0 +1,21 @@
+{% extends "app.html" %}
+
+{% block content %}
+    <h1>Input Data</h1>
+    <!--
+	action emptpy - forms open in same URL
+	novalidate - leaves validation to server side (Flask)
+    -->
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.dict_name.label }}<br>
+            {{ form.dict_name(size=32) }}
+        </p>
+        <p>
+            {{ form.input_text.label }}<br>
+            {{ form.input_text(size=32) }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
