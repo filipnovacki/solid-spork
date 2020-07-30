@@ -3,8 +3,7 @@ import transaction
 
 from BTrees.OOBTree import TreeSet, OOBTree, BTree
 
-
-def open_conn(db='database.fs'):
+def open_conn(db='db/database.fs'):
     """
     Opens connection to database
 
@@ -16,8 +15,18 @@ def open_conn(db='database.fs'):
     conn = db.open()
     return conn
 
+# not used
+def get_dictionaries(db='db/database.fs'):
+    storage = ZODB.FileStorage.FileStorage(db)
+    db = ZODB.DB(storage)
+    conn = db.open()
 
-def add_dictionary(d, db='database.fs'):
+    dicts = conn.root().items()
+    conn.close()
+    db.close()
+    return dicts
+
+def add_dictionary(d, db='db/database.fs'):
     """
     Adds dictionary to database.
 
@@ -26,13 +35,17 @@ def add_dictionary(d, db='database.fs'):
 
     returns added dictionary from the root object
     """
-    conn = open_conn(db)
+    storage = ZODB.FileStorage.FileStorage(db)
+    db = ZODB.DB(storage)
+    conn = db.open()
     root = conn.root()
 
-    if root.dictionaries == None:
-        root.dictionaries = BTree()
+    root[d.title] = d
 
-    if root.dictionaries[d.title] == None:
-        root.dictionaries[d.title] = d
+    transaction.commit()
+    conn.close()
+    db.close()
 
-    return root[d.title]
+    return
+
+# self.words.update({word: Word(word)})

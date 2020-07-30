@@ -1,0 +1,15 @@
+{% extends "app.html" %}
+{% block content %}
+
+<section class="section">
+    Select dictionary to print: <br>
+    <ul>
+    {% for x in dicts %}
+        <li><a href="/print_dict?dict={{ x[0] }}">{{ x[0] }}</a></li>
+    {% endfor %}
+    </ul>
+</section>
+
+This is where you can select dictionary to print
+
+{% endblock %}
