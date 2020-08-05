@@ -8,14 +8,24 @@ from nltk.corpus import wordnet as wn, cmudict
 class Word(persistent.Persistent):
     def __init__(self, name):
         self.synset = wn.synsets(name)
-        self.name, self.pos = self.synset[0].name().split('.')[0:2]
-        self.not_defined = None
-        self.synonyms = {a.name(): (a.definition(), a.examples()) for a in self.synset}
+        self.not_defined = False
+        if len(self.synset) != 0:
+            self.name, self.pos = self.synset[0].name().split('.')[0:2]
+            self.synonyms = {a.name(): (a.definition(), a.examples()) for a in self.synset}
+        elif name in cmudict.words():
+            self.name = name
+            self.not_defined = True
+        else:
+            self.not_defined = True
+            return
         self.pronunciation = ' '.join([a for a in cmudict.entries()[cmudict.words().index(name)][1]])
 
     def __repr__(self):
         if self.not_defined:
-            return self.name
+            try:
+                return self.name
+            except AttributeError:
+                return "Unknown word"
         elif not self.not_defined:
             return str(self.name + ': ' + ', '.join(set([g.split('.')[0] for g in self.synonyms.keys()])))
         else:
