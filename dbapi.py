@@ -7,9 +7,10 @@ from nltk.corpus import wordnet as wn, cmudict
 
 class Word(persistent.Persistent):
     def __init__(self, name):
-        self.name = name
+        self.synset = wn.synsets(name)
+        self.name, self.pos = self.synset[0].name().split('.')[0:2]
         self.not_defined = None
-        self.synonyms = {a.name(): (a.definition(), a.examples()) for a in wn.synsets("blessing")}
+        self.synonyms = {a.name(): (a.definition(), a.examples()) for a in self.synset}
         self.pronunciation = ' '.join([a for a in cmudict.entries()[cmudict.words().index(name)][1]])
 
     def __repr__(self):
