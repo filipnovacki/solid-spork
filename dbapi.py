@@ -1,30 +1,31 @@
-import ZODB, ZODB.FileStorage
+import ZODB
+import ZODB.FileStorage
+import persistent
 import transaction
+from nltk.corpus import wordnet as wn, cmudict
 
-from BTrees.OOBTree import TreeSet, OOBTree, BTree
 
-def open_conn(db='db/database.fs'):
-    """
-    Opens connection to database
+class Word(persistent.Persistent):
+    def __init__(self, name):
+        self.name = name
+        self.not_defined = None
+        self.synonyms = {a.name(): (a.definition(), a.examples()) for a in wn.synsets("blessing")}
+        self.pronunciation = ' '.join([a for a in cmudict.entries()[cmudict.words().index(name)][1]])
 
-    db - path to database, defaults to database.fs. Optional argument
-    returns open connection
-    """
-    storage = ZODB.FileStorage.FileStorage(db)
-    db = ZODB.DB(storage)
-    conn = db.open()
-    return conn
+    def __repr__(self):
+        if self.not_defined:
+            return self.name
+        elif not self.not_defined:
+            return str(self.name + ': ' + ', '.join(set([g.split('.')[0] for g in self.synonyms.keys()])))
+        else:
+            return self.name + ' (analysis not yet run)'
 
-# not used
-def get_dictionaries(db='db/database.fs'):
-    storage = ZODB.FileStorage.FileStorage(db)
-    db = ZODB.DB(storage)
-    conn = db.open()
+    def __eq__(self, other):
+        if self.name == other.name:
+            return True
+        else:
+            return False
 
-    dicts = conn.root().items()
-    conn.close()
-    db.close()
-    return dicts
 
 def add_dictionary(d, db='db/database.fs'):
     """
@@ -48,4 +49,36 @@ def add_dictionary(d, db='db/database.fs'):
 
     return
 
-# self.words.update({word: Word(word)})
+
+def add_word(word, in_memory=None):
+    if in_memory is not None:
+        # write into database
+        root = in_memory.root()
+        root['words'] += [word]
+        transaction.commit()
+        pass
+    else:
+        storage = ZODB.FileStorage.FileStorage('words.fs')
+        db = ZODB.DB(storage)
+        conn = db.open()
+        root = conn.root()
+        try:
+            root['words'] += [word]
+        except KeyError:
+            root['words'] = [word]
+        transaction.commit()
+        db.close()
+
+    return
+
+
+def list_words(in_memory=None):
+    if in_memory is not None:
+        return in_memory['words']
+    else:
+        storage = ZODB.FileStorage.FileStorage('words.fs')
+        db = ZODB.DB(storage)
+        conn = db.open()
+        root = conn.root()['words']
+        db.close()
+        return root
