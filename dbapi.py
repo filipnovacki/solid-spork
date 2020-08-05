@@ -55,7 +55,10 @@ def add_word(word, in_memory=None):
     if in_memory is not None:
         # write into database
         root = in_memory.root()
-        root['words'] += [word]
+        try:
+            root['words'] += [{word.name: word}]
+        except KeyError:
+            root['words'] = [{word.name: word}]
         transaction.commit()
         pass
     else:
@@ -64,9 +67,9 @@ def add_word(word, in_memory=None):
         conn = db.open()
         root = conn.root()
         try:
-            root['words'] += [word]
+            root['words'] += [{word.name: word}]
         except KeyError:
-            root['words'] = [word]
+            root['words'] = [{word.name: word}]
         transaction.commit()
         db.close()
 
