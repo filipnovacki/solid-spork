@@ -1,6 +1,7 @@
 import ZODB
 import ZODB.FileStorage
 import persistent.list
+import persistent.mapping
 import persistent
 import transaction
 from nltk.corpus import wordnet as wn, cmudict
@@ -56,8 +57,20 @@ def add_word(word, in_memory=None):
         conn = db.open()
         root = conn.root()
         rt = root['words']
-        a = {word: vword}
-        root['words'] = rt + [a]
+        if word in rt:
+            rt[word].count += 1
+        else:
+            rt[word] = vword
+        # for a in rt:
+        #     if word in a.keys():
+        #         a[word].count += 1
+        #     else:
+        #         a = {word: vword}
+        #         root['words'] = rt + [a]
+            # for x in a:
+            #     if x == word:
+            #         a[x].count += 1
+            #     else:
         try:
             transaction.commit()
         except:
@@ -78,8 +91,7 @@ def list_words(in_memory=None):
             root = conn.root()
             words = root['words']
             for a in words:
-                for x in a:
-                    yield a[x].name
+                yield words[a].name, words[a].count
         except KeyError:
             return None
         # yield words
@@ -93,11 +105,14 @@ def start_db():
     conn = db.open()
 
     root = conn.root()
-    root['words'] = persistent.list.PersistentList()
+    root['words'] = persistent.mapping.PersistentMapping()
     transaction.commit()
 
     conn.close()
     db.close()
 
 
-# print(list(list_words()))
+print(list(list_words()))
+add_word('father')
+add_word('mutilate')
+print(list(list_words()))
