@@ -1,7 +1,5 @@
 from flask import Flask, render_template, flash, redirect, request
 from forms import InputDataForm
-from dbapi import open_conn, add_dictionary, get_dictionaries
-from bookkeep import Dictionary
 import ZODB
 
 app = Flask(__name__)
@@ -12,7 +10,7 @@ This is homepage function
 """
 @app.route('/')
 def hello_world():
-    return render_template("app.html", dicts = get_dictionaries())
+    return render_template("app.html")
 
 
 """
@@ -24,12 +22,10 @@ def add_to_dictionary():
 
     # returns false if get request
     if form.validate_on_submit():
+        from dbapi import add_words
         flash('Adding data to dictionary {}'.format(form.dict_name.data))
 
-        dict = Dictionary(form.dict_name.data)
-        dict.add_words(form.input_text.data)
-
-        add_dictionary(dict)
+        add_words(form.input_text.data)
 
         return redirect('/')
     return render_template('input_data.html', title='Add to dictionary',
@@ -50,4 +46,4 @@ def print_dict():
         # start printing process
 
     # nothing is selected for printing
-    return render_template("print_dict.html", dicts = get_dictionaries())
+    return render_template("print_dict.html")

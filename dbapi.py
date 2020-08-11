@@ -6,6 +6,8 @@ import persistent
 import transaction
 from nltk.corpus import wordnet as wn, cmudict
 
+cmudict_words = cmudict.words()
+
 
 class Word(persistent.Persistent):
     def __init__(self, name):
@@ -14,13 +16,13 @@ class Word(persistent.Persistent):
         if len(synset) != 0:
             self.name, self.pos = synset[0].name().split('.')[0:2]
             self.synonyms = {a.name(): (a.definition(), a.examples()) for a in synset}
-        elif name in cmudict.words():
+        elif name in cmudict_words:
             self.name = name
             self.not_defined = True
         else:
             self.not_defined = True
             return
-        self.pronunciation = ' '.join([a for a in cmudict.entries()[cmudict.words().index(name)][1]])
+        self.pronunciation = ' '.join([a for a in cmudict.entries()[cmudict_words.index(name)][1]])
         self.count = 1
 
     def __repr__(self):
@@ -41,20 +43,38 @@ class Word(persistent.Persistent):
             return False
 
 
+def add_words(text):
+    import os.path
+    if not os.path.isfile('words.fs'):
+        start_db()
+
+    from nltk.corpus import stopwords
+    from textblob import TextBlob
+    sw = stopwords.words('english')
+
+    words = [w for w in TextBlob(text).words if w not in sw]
+    for word in words:
+        add_word(word)
+    return 1
+
+
 def add_word(word, in_memory=None):
     storage = ZODB.FileStorage.FileStorage('words.fs')
     db = ZODB.DB(storage)
     conn = db.open()
     root = conn.root()
-    rt = root['words']
-    if word in rt:
-        rt[word].count += 1
-    else:
-        rt[word] = Word(word)
-
-    transaction.commit()
-    conn.close()
-    db.close()
+    try:
+        rt = root['words']
+        if word in rt:
+            rt[word].count += 1
+        else:
+            rt[word] = Word(word)
+    except:
+        pass
+    finally:
+        transaction.commit()
+        conn.close()
+        db.close()
 
 
 def list_words(in_memory=None):
@@ -72,8 +92,9 @@ def list_words(in_memory=None):
         except KeyError:
             return None
         # yield words
-        conn.close()
-        db.close()
+        finally:
+            conn.close()
+            db.close()
 
 
 def start_db():
@@ -88,8 +109,3 @@ def start_db():
     conn.close()
     db.close()
 
-
-print(list(list_words()))
-add_word('father')
-add_word('mutilate')
-print(list(list_words()))
