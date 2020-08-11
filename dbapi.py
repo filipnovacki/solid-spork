@@ -42,42 +42,19 @@ class Word(persistent.Persistent):
 
 
 def add_word(word, in_memory=None):
-    if in_memory is not None:
-        # write into database
-        root = in_memory.root()
-        try:
-            root['words'] += ({word.name: word},)
-        except KeyError:
-            root['words'] = ({word.name: word},)
-        transaction.commit()
+    storage = ZODB.FileStorage.FileStorage('words.fs')
+    db = ZODB.DB(storage)
+    conn = db.open()
+    root = conn.root()
+    rt = root['words']
+    if word in rt:
+        rt[word].count += 1
     else:
-        vword = Word(word)
-        storage = ZODB.FileStorage.FileStorage('words.fs')
-        db = ZODB.DB(storage)
-        conn = db.open()
-        root = conn.root()
-        rt = root['words']
-        if word in rt:
-            rt[word].count += 1
-        else:
-            rt[word] = vword
-        # for a in rt:
-        #     if word in a.keys():
-        #         a[word].count += 1
-        #     else:
-        #         a = {word: vword}
-        #         root['words'] = rt + [a]
-            # for x in a:
-            #     if x == word:
-            #         a[x].count += 1
-            #     else:
-        try:
-            transaction.commit()
-        except:
-            return "Couldn't commit"
-        finally:
-            conn.close()
-            db.close()
+        rt[word] = Word(word)
+
+    transaction.commit()
+    conn.close()
+    db.close()
 
 
 def list_words(in_memory=None):
