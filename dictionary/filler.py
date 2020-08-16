@@ -15,6 +15,7 @@ def sectionise(*input_dict):
     words = []
 
     for word in input_dict:
+        print('Usao sam u ' , word)
         try:
             blank_word = {'name': word.name,
                           'pronunciation': word.pronunciation,

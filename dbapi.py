@@ -19,11 +19,16 @@ class Word(persistent.Persistent):
         elif name in cmudict_words:
             self.name = name
             self.not_defined = True
+            return
         else:
             self.not_defined = True
             return
-        self.pronunciation = ' '.join([a for a in cmudict.entries()[cmudict_words.index(name)][1]])
+        try:
+            self.pronunciation = ' '.join([a for a in cmudict.entries()[cmudict_words.index(name)][1]])
+        except:
+            self.pronunciation = None
         self.count = 1
+        print("Word added: " + name)
 
     def __repr__(self):
         if self.not_defined:
@@ -43,7 +48,7 @@ class Word(persistent.Persistent):
             return False
 
 
-def add_words(text):
+def add_words(text, dictionary):
     import os.path
     if not os.path.isfile('words.fs'):
         start_db()
@@ -54,47 +59,47 @@ def add_words(text):
 
     words = [w for w in TextBlob(text).words if w not in sw]
     for word in words:
-        add_word(word)
+        add_word(word, dictionary)
     return 1
 
 
-def add_word(word, in_memory=None):
+def add_word(word, dictionary, in_memory=None):
+    vw = Word(word.lower())
     storage = ZODB.FileStorage.FileStorage('words.fs')
     db = ZODB.DB(storage)
     conn = db.open()
     root = conn.root()
+    if dictionary not in root:
+        root[dictionary] = persistent.mapping.PersistentMapping()
     try:
-        rt = root['words']
+        rt = root[dictionary]
         if word in rt:
             rt[word].count += 1
-        else:
-            rt[word] = Word(word)
+        elif vw.not_defined == False:
+            rt[word] = vw
+        transaction.commit()
     except:
         pass
     finally:
-        transaction.commit()
         conn.close()
         db.close()
 
 
-def list_words(in_memory=None):
-    if in_memory is not None:
-        return in_memory['words']
-    else:
-        storage = ZODB.FileStorage.FileStorage('words.fs')
-        db = ZODB.DB(storage)
-        conn = db.open()
-        try:
-            root = conn.root()
-            words = root['words']
-            for a in words:
-                yield words[a].name, words[a].count
-        except KeyError:
-            return None
-        # yield words
-        finally:
-            conn.close()
-            db.close()
+def list_words(dictionary):
+    storage = ZODB.FileStorage.FileStorage('words.fs')
+    db = ZODB.DB(storage)
+    conn = db.open()
+    try:
+        root = conn.root()
+        words = root[dictionary]
+        for a in words:
+            yield a  # if not a.not_defined else words[a]
+    except KeyError:
+        return None
+    # yield words
+    finally:
+        conn.close()
+        db.close()
 
 
 def start_db():
@@ -108,4 +113,3 @@ def start_db():
 
     conn.close()
     db.close()
-
