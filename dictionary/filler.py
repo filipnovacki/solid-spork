@@ -1,23 +1,13 @@
 import string
 
 from jinja2 import Template
-from nltk.corpus import wordnet as wn
-
-
-def start_test(word):
-    wordsyn = wn.synset(word)
-    return wordsyn
-    return sectionise(wn.synset(word))
 
 
 def sectionise(*input_dict):
-    # sectioned {
     words = []
 
     for word in input_dict[0]:
-        # for word in words:
         print('Usao sam u ', word, type(word))
-        #            if word.name.isdigit():
         try:
             blank_word = {'name': word.name,
                           'pronunciation': word.pronunciation,
@@ -93,4 +83,3 @@ def render(dictionary):
     rendered = template.render(entries=dictionary)
 
     generate_pdf(rendered)
-    #print(rendered)
