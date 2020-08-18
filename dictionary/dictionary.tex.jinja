@@ -24,8 +24,14 @@
 \section*{{ '{' + section.section + '}' }}
 \begin{multicols}{2}
 {% for word in section.words %}
-	\entry{{ '{' + word.name + '}' }}{{ '{' + word.pronunciation + '}'}}{{
-	'{' + word.pos + '}' }}{{ '{' + word.explanation + '}' }}
+	\entry{{ '{' + word.name + '}' }}
+	{{ '{' + word.pronunciation + '}'}}
+	{{ '{' + word.pos + '}' }}
+	{
+	{% for ex in explanation %}
+	    {{ '{' + ex + '}' }}
+	{% endfor %}
+	}
 {% endfor %}
 \end{multicols}
 {% endfor %}

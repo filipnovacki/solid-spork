@@ -1,4 +1,6 @@
 from flask import Flask, render_template, flash, redirect, request
+
+from dictionary.filler import render
 from forms import InputDataForm, EnterDictionaryForm
 import ZODB
 
@@ -44,8 +46,12 @@ def print_dict():
 
     if request.method == "POST":
         import dictionary.filler as df
-        out = df.sectionise(list(list_words(form.d_name.data)))
-        print(out)
+        out = df.sectionise(
+            list(
+                list_words(form.d_name.data)
+            )
+        )
+        print(render(out))
         return redirect('/')
 
     # if request.args.get('dict') is not None:

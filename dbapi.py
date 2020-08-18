@@ -59,7 +59,8 @@ def add_words(text, dictionary):
 
     words = [w for w in TextBlob(text).words if w not in sw]
     for word in words:
-        add_word(word, dictionary)
+        if not str(word).isdigit():
+            add_word(str(word), dictionary)
     return 1
 
 
@@ -75,7 +76,7 @@ def add_word(word, dictionary, in_memory=None):
         rt = root[dictionary]
         if word in rt:
             rt[word].count += 1
-        elif vw.not_defined == False:
+        elif not vw.not_defined:
             rt[word] = vw
         transaction.commit()
     except:
@@ -93,7 +94,10 @@ def list_words(dictionary):
         root = conn.root()
         words = root[dictionary]
         for a in words:
-            yield a  # if not a.not_defined else words[a]
+            print(type(a))
+            if not words[a].not_defined:
+                yield words[a]
+            #yield a if not a.not_defined else
     except KeyError:
         return None
     # yield words
