@@ -1,0 +1,127 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[croatian]{babel}
+\usepackage{tikz}
+
+\title{Dokumentacija}
+\author{Filip Novački}
+
+%------ tikz pikz
+% Define the layers to draw the diagram
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+\usetikzlibrary{shadows,arrows}
+%
+% Define block styles
+\tikzstyle{materia}=[draw, fill=blue!20, text width=6.0em, text centered,
+  minimum height=1.5em,drop shadow]
+\tikzstyle{formst}=[draw, fill=red!20, text width=6.0em, text centered,
+  minimum height=1.5em,drop shadow]
+\tikzstyle{dbapist}=[draw, fill=green!20, text width=6.0em, text centered,
+  minimum height=1.5em,drop shadow]
+\tikzstyle{fillerst}=[draw, fill=magenta!20, text width=6.0em, text centered,
+  minimum height=1.5em,drop shadow]
+\tikzstyle{practica} = [materia, text width=6em, minimum width=8em,
+  minimum height=3em, rounded corners, drop shadow]
+\tikzstyle{route} = [materia, text width=4em, minimum width=4em,
+  minimum height=2em, rounded corners, drop shadow]
+\tikzstyle{app} = [materia, text width=7em, minimum width=4em,
+  minimum height=2em, rounded corners, drop shadow]
+\tikzstyle{form} = [formst, text width=7em, minimum width=4em,
+  minimum height=2em, rounded corners, drop shadow]
+\tikzstyle{filler} = [fillerst, text width=7em, minimum width=4em,
+  minimum height=2em, rounded corners, drop shadow]
+\tikzstyle{dbapi} = [dbapist, text width=7em, minimum width=4em,
+  minimum height=2em, rounded corners, drop shadow]
+\tikzstyle{texto} = [above, text width=6em, text centered]
+\tikzstyle{linepart} = [draw, thick, color=black!50, -latex', dashed]
+\tikzstyle{line} = [draw, thick, color=black!80, -latex']
+\tikzstyle{ur}=[draw, text centered, minimum height=0.01em]
+%%
+\newcommand{\blockdist}{1.3}
+\newcommand{\edgedist}{1.5}
+%%
+% Draw background
+\newcommand{\background}[5]{%
+  \begin{pgfonlayer}{background}
+    % Left-top corner of the background rectangle
+    \path (#1.west |- #2.north)+(-0.5,0.5) node (a1) {};
+    % Right-bottom corner of the background rectanle
+    \path (#3.east |- #4.south)+(+0.5,-0.25) node (a2) {};
+    % Draw the background
+    \path[fill=yellow!20,rounded corners, draw=black!50, dashed]
+      (a1) rectangle (a2);
+    \path (a1.east |- a1.south)+(0.8,-0.3) node (u1)[texto]
+      {\scriptsize\textit{#5}};
+  \end{pgfonlayer}}
+%
+\newcommand{\practica}[2]{node (p#1) [practica]
+  {{\scriptsize\texttt{#2}}}}
+%
+\newcommand{\route}[2]{node (p#1) [route]
+  {{\scriptsize\texttt{#2}}}}
+%
+\newcommand{\app}[3]{node (p#1) [app]
+  {{\scriptsize\texttt{#2}}\\{\tiny render: \texttt{#3}}}}
+%
+\newcommand{\form}[2]{node (p#1) [form]
+  {{\scriptsize\texttt{#2}}}}
+%
+\newcommand{\dbapi}[2]{node (p#1) [dbapi]
+  {{\scriptsize\texttt{#2}}}}
+%
+\newcommand{\filler}[2]{node (p#1) [filler]
+  {{\scriptsize\texttt{#2}}}}
+%------
+
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+\begin{document}
+
+\begin{tikzpicture}[scale=0.7]
+\path \route{1}{/};
+\path (p1.south)+(0.0,-5) \route{2}{/input};
+\path (p2.south)+(0.0,-5) \route{3}{/print\_dict};
+\background{p1}{p1}{p3}{p3}{Route};
+	\path (p1.east)+ (5,0) \app{4}{home()}{index.html};
+	\path (p2.east)+(5,0) \app{5}{add\_to\_dictionary()}{input\_data.html};
+\path (p5.north)+(0,1.3) \form{8}{InputDataForm()};
+	\path[line] (p5.north) -- node [below] {} (p8);
+	\path[line] (p8.south) -- node [above] {} (p5);
+	\path (p3.east)+(5,0) \app{6}{print\_dict()}{print\_dict.html};
+\path (p6.north)+(0,1.3) \form{7}{EnterDictForm()};
+	\path[line] (p1.east) -- node [left] {} (p4);
+	\path[line] (p6.north) -- node [below] {} (p7);
+	\path[line] (p7.south) -- node [above] {} (p6);
+	\path[line] (p2.east) -- node [left] {} (p5);
+	\path[line] (p3.east) -- node [left] {} (p6);
+\background{p4}{p4}{p6}{p6}{app.py};
+	\path (p5.east)+(5,0) \dbapi{20}{add\_words()};
+	\path (p20.south)+(0,-1.3) \dbapi{21}{start\_db()};
+	\path (p20.north)+(0,1.3) \dbapi{22}{add\_word()};
+	\path (p22.north)+(0,1.6) \dbapi{23}{ZODB\_DB};
+	\path[line] (p5.east) -- node [left] {\texttt{POST}} (p20);
+	\path[line] (p20.north) -- node [below] {} (p22);
+	\path[line] (p22.north) -- node [below] {} (p23);
+	\path[line] (p21.north) -- node [below] {} (p20);
+	\path[line] (p20.south) -- node [above] {} (p21);
+	\path (p6.east)+(5,0) \dbapi{24}{list\_words()};
+\background{p23}{p23}{p24}{p24}{dbapi.py};
+	\path[line] (p6.east) -- node [left] {\texttt{POST}} (p24);
+\path (p24.south)+(0,-3) \filler{30}{sectionise()};
+\path (p30.west)+(-3,0) \filler{31}{render()};
+\path (p31.south)+(0,-1.5) \filler{32}{PDF output};
+	\path[line] (p24.south) -- node [above] {} (p30);
+	\path[line] (p24.south) -- node [above] {} (p30);
+	\path[line] (p30.west) -- node [right] {} (p31);
+	\path[line] (p31.south) -- node [below] {} (p32);
+\background{p31}{p31}{p30}{p32}{filler.py};
+\end{tikzpicture}
+
+
+
+
+
+\end{document}
+
