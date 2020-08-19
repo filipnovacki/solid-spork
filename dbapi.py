@@ -14,7 +14,8 @@ class Word(persistent.Persistent):
         synset = wn.synsets(name)
         self.not_defined = False
         if len(synset) != 0:
-            self.name, self.pos = synset[0].name().split('.')[0:2]
+            self.name = name
+            self.pos = synset[0].name().split('.')[1]
             self.synonyms = {a.name(): (a.definition(), a.examples()) for a in synset}
         elif name in cmudict_words:
             self.name = name
@@ -24,11 +25,13 @@ class Word(persistent.Persistent):
             self.not_defined = True
             return
         try:
-            self.pronunciation = ' '.join([a for a in cmudict.entries()[cmudict_words.index(name)][1]])
+            self.pronunciation = '-'.join([a for a in cmudict.entries()[cmudict_words.index(name)][1]])
+            if type(self.pronunciation) is type([]):
+                self.pronunciation = self.pronunciation[0]
         except:
             self.pronunciation = None
         self.count = 1
-        print("Word added: " + name)
+        print("t" if self.name == name else "f", "Word added: " + name, self.name)
 
     def __repr__(self):
         if self.not_defined:

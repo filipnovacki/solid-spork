@@ -15,7 +15,7 @@
 \renewcommand{\footrulewidth}{1.4pt} % Rule under the footer
 \pagestyle{fancy} % Use the custom headers and footers throughout the document
 %\entry{Aardvark}{ahrd-vahrk}{Noun}{A nocturnal badger-sized burrowing mammal of Africa, with long ears, a tubular snout, and a long extensible tongue, feeding on ants and termites. Also called antbear.}
-\newcommand{\entry}[4]{\textbf{#1}\markboth{#1}{#1}\ {(#2)}\ \textit{#3}\ $\bullet$\ {#4}} % Defines the command to print each word on the page, \markboth{}{} prints the first word on the page in the top left header and the last word in the top right
+\newcommand{\entry}[3]{\noindent\textbf{#1}\markboth{#1}{#1}\ {(#2)}\ $\bullet$\ {#3}} % Defines the command to print each word on the page, \markboth{}{} prints the first word on the page in the top left header and the last word in the top right
 {% endraw %}
 
 \begin{document}
@@ -24,15 +24,14 @@
 \section*{{ '{' + section.section + '}' }}
 \begin{multicols}{2}
 {% for word in section.words %}
-	\entry{{ '{' + word.name + '}' }}
-	{{ '{' + word.pronunciation + '}'}}
-	{{ '{' + word.pos + '}' }}
-	{
-	{% for ex in explanation %}
-	    {{ '{' + ex + '}' }}
-	{% endfor %}
-	}
-{% endfor %}
+
+\entry{{ '{' + word.name | replace("_", " ") + '}' }}{%+ if word.pronunciation %}{{ '{' + word.pronunciation + '}'}}{% endif %}
+{ {% for ex in word.explanation -%}
+            {{ '(\\textit{' + ex[0] +'}) '+ ex[1] | replace("_", " ") | replace("%", "\%")  | replace("$", "\$")}}
+    {% endfor %}
+}
+{%- endfor %}
+
 \end{multicols}
 {% endfor %}
 
