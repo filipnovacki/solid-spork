@@ -97,10 +97,8 @@ def list_words(dictionary):
             print(type(a))
             if not words[a].not_defined:
                 yield words[a]
-            #yield a if not a.not_defined else
     except KeyError:
         return None
-    # yield words
     finally:
         conn.close()
         db.close()
