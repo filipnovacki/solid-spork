@@ -1,19 +1,11 @@
 {% extends "app.html" %}
 {% block content %}
 
-<form action="" method="post" novalidate>
-    <p>
-        {{ form.d_name.label }}<br>
-        {{ form.d_name(size=32) }}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
-
 <section class="section">
     Select dictionary to print:
     <ul>
     {% for x in dicts %}
-        <li><a href="/print_dict?dict={{ x }}">{{ x }}</a></li>
+        <li><a href="/print_dict?dict={{ x[0] }}">{{ x[0] }}</a>, {{ x[1] }} entries</li>
     {% endfor %}
     </ul>
 </section>

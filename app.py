@@ -1,7 +1,5 @@
-from flask import Flask, render_template, flash, redirect, request
-
-from dictionary.filler import render
-from forms import InputDataForm, EnterDictionaryForm
+from flask import Flask, render_template, flash, redirect, request, send_file
+from forms import InputDataForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
@@ -37,16 +35,15 @@ def add_to_dictionary():
 
 @app.route('/print_dict', methods=['POST', 'GET'])
 def print_dict():
-    form = EnterDictionaryForm()
-    from dbapi import get_words
+    from dbapi import get_words, get_dicts
 
-
-
-    if request.method == "POST":
+    if request.method == "GET" and request.args.get('dict') is not None:
         import dictionary.filler as df
-        out = df.sectionise(
+        df.sectionise(
             list(
-                get_words(form.d_name.data)
+                get_words(request.args.get('dict'))
             )
         )
-    return render_template("print_dict.html", dicts={}, form=form)
+        return send_file('dict.pdf', as_attachment=True)
+
+    return render_template("print_dict.html", dicts=get_dicts())

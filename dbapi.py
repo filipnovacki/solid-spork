@@ -106,6 +106,18 @@ def get_words(dictionary):
         db.close()
 
 
+def get_dicts():
+    storage = ZODB.FileStorage.FileStorage('words.fs')
+    db = ZODB.DB(storage)
+    conn = db.open()
+    try:
+        root = conn.root()
+        for dictionary in root:
+            yield dictionary, len(root[dictionary])
+    finally:
+        conn.close()
+        db.close()
+
 def start_db():
     storage = ZODB.FileStorage.FileStorage('words.fs')
     db = ZODB.DB(storage)
