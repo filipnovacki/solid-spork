@@ -89,7 +89,7 @@ def add_word(word, dictionary, in_memory=None):
         db.close()
 
 
-def list_words(dictionary):
+def get_words(dictionary):
     storage = ZODB.FileStorage.FileStorage('words.fs')
     db = ZODB.DB(storage)
     conn = db.open()
@@ -97,7 +97,6 @@ def list_words(dictionary):
         root = conn.root()
         words = root[dictionary]
         for a in words:
-            print(type(a))
             if not words[a].not_defined:
                 yield words[a]
     except KeyError:

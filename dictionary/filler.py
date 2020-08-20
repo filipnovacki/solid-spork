@@ -13,18 +13,13 @@ def sectionise(*input_dict):
         try:
             blank_word = {'name': word.name,
                           'pronunciation': word.pronunciation.lower(),
-                          #'pos': word.pos,
                           'explanation': list([(a.split('.')[1], word.synonyms[a][0]) for a in word.synonyms])}
-                          #'explanation': set((a.split('.')[0].replace("_", " "), word.synonyms[a][0]) for a in word.synonyms)}
-                #[str(a.split('.'[1])) + ' ' + str(int(a.split('.')[2])) + ". " + word.synonyms[a][0] for a in
-                #word.synonyms])}
         except AttributeError as e:
             print(str(e))
             continue
         except:
             blank_word = {'name': word.name,
                           'pronunciation': word.pronunciation.lower(),
-                          #'pos': None,
                           'explanation': None}
 
         words.append(blank_word)
@@ -44,10 +39,10 @@ def generate_pdf(tex_string, pdfname='dict.pdf'):
     import os
     import tempfile
     import shutil
-    f = open('cover.tex', 'w')
-    f.write(tex_string)
-    f.close()
-    return
+    # f = open('cover.tex', 'w')
+    # f.write(tex_string)
+    # f.close()
+    # return
     current = os.getcwd()
     temp = tempfile.mkdtemp()
     os.chdir(temp)

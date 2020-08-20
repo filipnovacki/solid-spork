@@ -38,16 +38,15 @@ def add_to_dictionary():
 @app.route('/print_dict', methods=['POST', 'GET'])
 def print_dict():
     form = EnterDictionaryForm()
-    from dbapi import list_words
+    from dbapi import get_words
+
+
 
     if request.method == "POST":
         import dictionary.filler as df
         out = df.sectionise(
             list(
-                list_words(form.d_name.data)
+                get_words(form.d_name.data)
             )
         )
-        print(render(out))
-        return redirect('/')
-
-    return render_template("print_dict.html", dicts=list(list_words('battery')), form=form)
+    return render_template("print_dict.html", dicts={}, form=form)
