@@ -4,10 +4,6 @@ from forms import InputDataForm
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
 
-"""
-This is homepage function
-"""
-
 
 @app.route('/')
 def home():
@@ -39,9 +35,11 @@ def print_dict():
 
     if request.method == "GET" and request.args.get('dict') is not None:
         import dictionary.filler as df
-        df.sectionise(
-            list(
-                get_words(request.args.get('dict'))
+        df.render(
+            df.sectionise(
+                list(
+                    get_words(request.args.get('dict'))
+                )
             )
         )
         return send_file('dict.pdf', as_attachment=True)

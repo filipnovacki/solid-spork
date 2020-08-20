@@ -118,6 +118,7 @@ def get_dicts():
         conn.close()
         db.close()
 
+
 def start_db():
     storage = ZODB.FileStorage.FileStorage('words.fs')
     db = ZODB.DB(storage)

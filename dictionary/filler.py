@@ -7,9 +7,6 @@ def sectionise(*input_dict):
     words = []
 
     for word in input_dict[0]:
-        print('Usao sam u ', word, type(word))
-        print(list((a.split('.')[0], word.synonyms[a]) for a in word.synonyms))
-        #print(list((a.split('.')[0]) for a in word.synonyms))
         try:
             blank_word = {'name': word.name,
                           'pronunciation': word.pronunciation.lower(),
@@ -39,10 +36,6 @@ def generate_pdf(tex_string, pdfname='dict.pdf'):
     import os
     import tempfile
     import shutil
-    # f = open('cover.tex', 'w')
-    # f.write(tex_string)
-    # f.close()
-    # return
     current = os.getcwd()
     temp = tempfile.mkdtemp()
     os.chdir(temp)
@@ -62,27 +55,6 @@ def generate_pdf(tex_string, pdfname='dict.pdf'):
 
 def render(dictionary):
     template = open('dictionary/dictionary.tex.jinja').read()
-
-    '''
-    dictionary = [{'section': 'A', 'words': [{'name': 'Aardvark',
-                                              'pronunciation': 'ahrd-vahrk',
-                                              'pos': 'Verb',
-                                              'explanation': 'A nocturnal badger-sized burrowing mammal of Africa, with\
-        long ears, a tubular snout, and a long extensible tongue, feeding on ants\
-        and termites. Also called antbear.'},
-                                            ]
-                  },
-                  {'section': 'B', 'words': [{  'name': 'Bardvak',
-                                                'pronunciation': 'ahrd-vahrk',
-                                                'pos': 'Verb',
-                                                'explanation': 'A nocturnal badger-sized burrowing mammal of Africa, with\
-        long ears, a tubular snout, and a long extensible tongue, feeding on ants\
-        and termites. Also called antbear.'},
-                                            ]
-                    }
-            ] '''
-
     template = Template(template)
     rendered = template.render(entries=dictionary)
-
     generate_pdf(rendered)
