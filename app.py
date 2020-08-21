@@ -1,4 +1,5 @@
 from flask import Flask, render_template, flash, redirect, request, send_file
+
 from forms import InputDataForm
 
 app = Flask(__name__)
@@ -7,6 +8,10 @@ app.config['SECRET_KEY'] = 'you-will-never-guess'
 
 @app.route('/')
 def home():
+    if request.args.get('new') == "yes":
+        import dbapi
+        dbapi.start_db()
+
     return render_template("app.html")
 
 
@@ -45,3 +50,8 @@ def print_dict():
         return send_file('dict.pdf', as_attachment=True)
 
     return render_template("print_dict.html", dicts=get_dicts())
+
+
+@app.route('/statistics')
+def statistics():
+    return render_template("statistics.html")

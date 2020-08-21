@@ -52,10 +52,6 @@ class Word(persistent.Persistent):
 
 
 def add_words(text, dictionary):
-    import os.path
-    if not os.path.isfile('words.fs'):
-        start_db()
-
     from nltk.corpus import stopwords
     from textblob import TextBlob
     sw = stopwords.words('english')
@@ -122,11 +118,14 @@ def get_dicts():
 def start_db():
     storage = ZODB.FileStorage.FileStorage('words.fs')
     db = ZODB.DB(storage)
-    conn = db.open()
+    db.close()
 
-    root = conn.root()
-    root['words'] = persistent.mapping.PersistentMapping()
-    transaction.commit()
+
+def get_word_count():
+    storage = ZODB.FileStorage.FileStorage('words.fs')
+    db = ZODB.DB(storage)
+    conn = db.open()
 
     conn.close()
     db.close()
+
