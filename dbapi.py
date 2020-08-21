@@ -94,6 +94,19 @@ def get_words(dictionary):
     db.close()
 
 
+def get_word_names(dictionary):
+    storage = ZODB.FileStorage.FileStorage('words.fs')
+    db = ZODB.DB(storage)
+    conn = db.open()
+    root = conn.root()
+    words = root[dictionary]
+    for a in words:
+        if not words[a].not_defined:
+            yield words[a].name
+    conn.close()
+    db.close()
+
+
 def get_dicts_len():
     storage = ZODB.FileStorage.FileStorage('words.fs')
     db = ZODB.DB(storage)

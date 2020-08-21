@@ -27,7 +27,7 @@
 
 \entry{{ '{' + word.name | replace("_", " ") + '}' }}{%+ if word.pronunciation %}{{ '{' + word.pronunciation + '}'}}{% endif %}
 { {% for ex in word.explanation -%}
-            {{ '(\\textit{' + ex[0] +'}) '+ ex[1] | replace("_", " ") | replace("%", "\%")  | replace("$", "\$")}}
+            {{ '(\\textit{' + ex[0] +'}) '+ ex[1] | replace("_", " ") | replace("%", "\%")  | replace("$", "\$") | replace("&", "\&")}}
     {% endfor %}
 }
 {%- endfor %}

@@ -2,7 +2,7 @@ from flask import Flask, render_template, flash, redirect, request, send_file
 
 from dbapi import get_dicts
 from forms import InputDataForm
-from graph_drawer import draw_graph
+from graph_drawer import draw_occ_graph, draw_wordlen_graph
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
@@ -58,5 +58,6 @@ def print_dict():
 def statistics():
     dicts = list(get_dicts())
     for dictionary in dicts:
-        draw_graph(dictionary)
+        draw_occ_graph(dictionary)
+        draw_wordlen_graph(dictionary)
     return render_template("statistics.html", images=dicts)
