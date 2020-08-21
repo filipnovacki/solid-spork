@@ -71,48 +71,38 @@ def add_word(word, dictionary, in_memory=None):
     root = conn.root()
     if dictionary not in root:
         root[dictionary] = persistent.mapping.PersistentMapping()
-    try:
-        rt = root[dictionary]
-        if word in rt:
-            rt[word].count += 1
-        elif not vw.not_defined:
-            rt[word] = vw
-        transaction.commit()
-    except:
-        pass
-    finally:
-        conn.close()
-        db.close()
+    rt = root[dictionary]
+    if word in rt:
+        rt[word].count += 1
+    elif not vw.not_defined:
+        rt[word] = vw
+    transaction.commit()
+    conn.close()
+    db.close()
 
 
 def get_words(dictionary):
     storage = ZODB.FileStorage.FileStorage('words.fs')
     db = ZODB.DB(storage)
     conn = db.open()
-    try:
-        root = conn.root()
-        words = root[dictionary]
-        for a in words:
-            if not words[a].not_defined:
-                yield words[a]
-    except KeyError:
-        return None
-    finally:
-        conn.close()
-        db.close()
+    root = conn.root()
+    words = root[dictionary]
+    for a in words:
+        if not words[a].not_defined:
+            yield words[a]
+    conn.close()
+    db.close()
 
 
 def get_dicts():
     storage = ZODB.FileStorage.FileStorage('words.fs')
     db = ZODB.DB(storage)
     conn = db.open()
-    try:
-        root = conn.root()
-        for dictionary in root:
-            yield dictionary, len(root[dictionary])
-    finally:
-        conn.close()
-        db.close()
+    root = conn.root()
+    for dictionary in root:
+        yield dictionary, len(root[dictionary])
+    conn.close()
+    db.close()
 
 
 def start_db():
