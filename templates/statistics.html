@@ -1,6 +1,13 @@
 {%  extends "app.html" %}
 
 {% block content %}
-    Welcome to statistics
+
+    {% for x in images %}
+    <figure>
+    <img src="static/{{ x }}wc.png" alt="{{ x }} dictionary image">
+        <img src="{{ x }}" alt="">
+    <figcaption>In dictionary {{ x }} ratio of word occurrencies against their number</figcaption>
+    </figure>
+    {% endfor %}
 
 {% endblock %}

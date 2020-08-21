@@ -94,7 +94,7 @@ def get_words(dictionary):
     db.close()
 
 
-def get_dicts():
+def get_dicts_len():
     storage = ZODB.FileStorage.FileStorage('words.fs')
     db = ZODB.DB(storage)
     conn = db.open()
@@ -111,11 +111,35 @@ def start_db():
     db.close()
 
 
-def get_word_count():
-    storage = ZODB.FileStorage.FileStorage('words.fs')
+def get_dicts():
+    storage = ZODB.FileStorage.FileStorage('words.fs', read_only=True)
     db = ZODB.DB(storage)
     conn = db.open()
+    root = conn.root()
+    for x in root:
+        yield x
+    conn.close()
+    db.close()
+
+
+def get_word_count(dictionary):
+    storage = ZODB.FileStorage.FileStorage('words.fs', read_only=True)
+    db = ZODB.DB(storage)
+    conn = db.open()
+
+    root = conn.root()
+    if dictionary not in root:
+        conn.close()
+        db.close()
+        return None
+    root = root[dictionary]
+    words = {'word': [],
+             'count': []}
+    for word in root:
+        words['word'] += [root[word].name]
+        words['count'] += [root[word].count]
 
     conn.close()
     db.close()
 
+    return words

@@ -1,6 +1,8 @@
 from flask import Flask, render_template, flash, redirect, request, send_file
 
+from dbapi import get_dicts
 from forms import InputDataForm
+from graph_drawer import draw_graph
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
@@ -36,7 +38,7 @@ def add_to_dictionary():
 
 @app.route('/print_dict', methods=['POST', 'GET'])
 def print_dict():
-    from dbapi import get_words, get_dicts
+    from dbapi import get_words, get_dicts_len
 
     if request.method == "GET" and request.args.get('dict') is not None:
         import dictionary.filler as df
@@ -49,9 +51,12 @@ def print_dict():
         )
         return send_file('dict.pdf', as_attachment=True)
 
-    return render_template("print_dict.html", dicts=get_dicts())
+    return render_template("print_dict.html", dicts=get_dicts_len())
 
 
 @app.route('/statistics')
 def statistics():
-    return render_template("statistics.html")
+    dicts = list(get_dicts())
+    for dictionary in dicts:
+        draw_graph(dictionary)
+    return render_template("statistics.html", images=dicts)
