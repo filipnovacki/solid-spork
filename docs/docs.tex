@@ -3,7 +3,8 @@
 \usepackage{lipsum}
 
 \vrstaRada{\projekt} % \diplomski \projekt \seminar \zavrsni
-\title{Naslov završnog/diplomskog rada -- LaTeX Predložak}
+\title{Sustav za unos i analizu skupa riječi po rječniku - sustav zasnovan na
+objektnom sustavu za upravljanje bazama podataka \texttt{ZODB}}
 
 \author{Filip Novački}
 \spolStudenta{\musko} % \zensko ili \musko
@@ -17,12 +18,12 @@
 \smjer{Informacijski sustavi}
 \titulaProfesora{dr. sc.}
 
-\sazetak{Opsega od 100 do 300 riječi. Sažetak upućuje na temu rada, ukratko se
-iznosi čime se rad bavi, teorijsko-metodološka polazišta, glavne teze i smjer
-rada te zaključci.}
+\sazetak{Ovaj rad dokumentacija je projekta iz kolegija Teorija baza podataka.
+Rad pokriva sve tehničke elemente projekta, pojedinosti baze, aplikacije te
+cilja.}
 
-\kljucneRijeci{riječ; riječ; ...riječ; Obuhvaća 7+/-2 ključna pojma koji su
-glavni predmet rasprave u radu.}
+\kljucneRijeci{ZODB, baza podataka, objektna baza podataka, flask, python,
+server, neurolingvistika, riječi}
 
 \begin{document}
 
@@ -194,6 +195,7 @@ Kao što je već napomenuto, glavne okosnice projekta su \texttt{Flask} i
 		te za provjeravanje postojećih datoteka u sustavu
 	\item[\texttt{wtforms}] -- biblioteka za kreiranje formi, integrirano s
 		\texttt{Flaskom} i \texttt{Jinjom}
+	\item[\texttt{matplotlib}] -- Pythonova biblioteka za crtanje grafova
 	\item[\LaTeX] -- služi za renderiranje PDF datoteke iz teksta
 	\item[ostalo] -- nekoliko Pythonovih biblioteka za rad s operacijskim
 		sustavom, uglavnom korišteno za uredan rad s \LaTeX-om
@@ -251,6 +253,65 @@ druga je da se napravi novi objekt u koji će se ti podatci zapisati. To su
 jedine dvije opcije jer nakon što se baza zaključa nije moguće pristupiti
 objektu koji je u bazi unatoč tome što u programu postoji referenca na taj
 objekt.
+
+\chapter{Prikaz rada i korištenje}
+
+\section{Unos riječi}
+
+Ova je aplikacija izrazito jednostavna za korištenje jer korisnik ima jako malo
+toga što može učiniti u cijelom procesu.
+
+\begin{figure}[!h]
+	\includegraphics[width=\textwidth]{slike/solid-spork-input.png}
+	\caption{Prikaz unosa teksta u bazu}
+	\label{ht_unos}
+\end{figure}
+
+Na slici \ref{ht_unos} prikazan je prizor kako se riječi mogu unositi. Količina
+podataka koja se može unijeti u polje ograničen je isključivo diskovnim
+prostorom koji se na iole suvremenim računalima neće tako lako dostići.
+
+Ovdje se preporuča unos velike količine teksta kao što su članci, blog objave
+itd. Kod unosa većih količina teksta korisnik se moli za strpljenje jer je
+potrebno oko pola sekunde po riječi zbog intenzivne obrade koja slijedi
+nakon unosa.
+
+\section{Ispis rječnika}
+
+Ispis rječnika korak je koji je glavna motivacija koja stoji iza projekta (v.
+slika \ref{ht_print}). Sve prikupljene riječi u nekom rječniku završavaju u
+\LaTeX\ dokumentu i kompajliraju se po odabiru rječnika.
+
+\begin{figure}[!h]
+	\includegraphics[width=\textwidth]{slike/solid-spork-print.png}
+	\caption{Prikaz ispisa rječnika}
+	\label{ht_print}
+\end{figure}
+
+Jednostavnim pritiskom na jedan od rječnika generira se PDF te se korisniku
+daje na preuzimanje.
+
+\section{Prikaz statistika}
+
+Prikaz statistika je funkcionalnost koja ne zahtijeva nikakvu korisničku
+intervenciju, već je isključivo informativne prirode. Na slici \ref{ht_stats}
+prikazan je primjer jednog grafa, a ostali se pojavljuju ispod njega.
+
+\begin{figure}[!h]
+	\includegraphics[width=\textwidth]{slike/solid-spork-stats.png}
+	\caption{Prikaz ispisa rječnika}
+	\label{ht_stats}
+\end{figure}
+
+Na grafovima su vizualno prikazana dva fenomena jezika - zastupljenost riječi
+te duljina riječi. Prvi graf u nizu prikazuje koliko riječi ima određenu
+frekvenciju. U svim je jezicima pravilo da svega nekoliko riječi se pojavljuje
+najviše puta, a najviše riječi se pojavljuje jako malo puta. Također, jezik je
+pun hapakslegomenona - riječi koje se pojavljuju samo jednom u nekom opusu.
+
+Drugi graf pokazuje kojih je riječi prema duljini najviše. Odoka se primjećuje
+nešto nalik na Poissonovu razdiobu, što bi se vjerojatno i moglo provjeriti
+nekim sofisticiranijim metodama od odokativne metode.
 
 \pagestyle{plain}
 
