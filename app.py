@@ -14,7 +14,7 @@ def home():
         import dbapi
         dbapi.start_db()
 
-    return render_template("app.html")
+    return render_template("index.html")
 
 
 @app.route('/input', methods=['GET', 'POST'])
@@ -60,4 +60,5 @@ def statistics():
     for dictionary in dicts:
         draw_occ_graph(dictionary)
         draw_wordlen_graph(dictionary)
-    return render_template("statistics.html", images=dicts)
+    import time
+    return render_template("statistics.html", images=dicts, time=str(int(time.time())))
