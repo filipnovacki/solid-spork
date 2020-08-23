@@ -2,18 +2,21 @@
 
 {% block content %}
 
+<h2>Graphs for dictionaries</h2>
+
 {% for x in images %}
-    <section class="section">
-    <h2 class="title">Dictionary {{ x }}</h2>
-        <figure>
-		<img src="static/{{ x }}wc.png?time={{ time }}" alt="{{ x }} dictionary image">
-            <figcaption>In dictionary {{ x }} ratio of word occurrencies against their number</figcaption>
+    <section class="section boxed">
+{#    <h2 class="title">Dictionary {{ x }}</h2>#}
+        <figure class="is-boxed">
+            <img src="data:image/png;base64,{{ x[0] }}"\>
+            <figcaption>Ratio of word occurrencies against their number</figcaption>
         </figure>
         <figure>
-		<img src="static/{{ x }}wl.png?time={{ time }}" alt="{{ x }} dictionary image">
-            <figcaption>In dictionary {{ x }} length of words against number of words of that length</figcaption>
+            <img src="data:image/png;base64,{{ x[1] }}"\>
+            <figcaption>Length of words against number of words of that length</figcaption>
         </figure>
     </section>
+    <hr>
 {% endfor %}
 
 {% endblock %}
