@@ -5,8 +5,10 @@ import persistent.mapping
 import persistent
 import transaction
 from nltk.corpus import wordnet as wn, cmudict
+from nltk.stem import PorterStemmer
 
 cmudict_words = cmudict.words()
+ps = PorterStemmer()
 
 
 class Word(persistent.Persistent):
@@ -14,11 +16,11 @@ class Word(persistent.Persistent):
         synset = wn.synsets(name)
         self.not_defined = False
         if len(synset) != 0:
-            self.name = name
+            self.name = ps.stem(name)
             self.pos = synset[0].name().split('.')[1]
             self.synonyms = {a.name(): (a.definition(), a.examples()) for a in synset}
         elif name in cmudict_words:
-            self.name = name
+            self.name = ps.stem(name)
             self.not_defined = True
             return
         else:
