@@ -5,7 +5,8 @@
     Select dictionary to print:
     <ul>
     {% for x in dicts %}
-        <li><a href="/print_dict?dict={{ x[0] }}">{{ x[0] }}</a>, {{ x[1] }} entries</li>
+        <li><a href="/print_dict?dict={{ x[0] }}">{{ x[0] }}</a>, {{ x[1] }}
+		entries, <a style='color: red' href='/rm?dict={{ x[0] }}'>purge</a></li>
     {% endfor %}
     </ul>
 </section>

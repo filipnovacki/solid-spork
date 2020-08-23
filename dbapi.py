@@ -82,7 +82,7 @@ def add_word(word, dictionary, in_memory=None):
 
 
 def get_words(dictionary):
-    storage = ZODB.FileStorage.FileStorage('words.fs')
+    storage = ZODB.FileStorage.FileStorage('words.fs', read_only=True)
     db = ZODB.DB(storage)
     conn = db.open()
     root = conn.root()
@@ -95,7 +95,7 @@ def get_words(dictionary):
 
 
 def get_word_names(dictionary):
-    storage = ZODB.FileStorage.FileStorage('words.fs')
+    storage = ZODB.FileStorage.FileStorage('words.fs', read_only=True)
     db = ZODB.DB(storage)
     conn = db.open()
     root = conn.root()
@@ -108,7 +108,7 @@ def get_word_names(dictionary):
 
 
 def get_dicts_len():
-    storage = ZODB.FileStorage.FileStorage('words.fs')
+    storage = ZODB.FileStorage.FileStorage('words.fs', read_only=True)
     db = ZODB.DB(storage)
     conn = db.open()
     root = conn.root()
@@ -156,3 +156,17 @@ def get_word_count(dictionary):
     db.close()
 
     return words
+
+def remove_dict(dictionary):
+    storage = ZODB.FileStorage.FileStorage('words.fs')
+    db = ZODB.DB(storage)
+    conn = db.open()
+    root = conn.root()
+
+    if dictionary in root:
+        del root[dictionary]
+
+    transaction.commit()
+
+    conn.close()
+    db.close()

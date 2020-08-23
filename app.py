@@ -62,3 +62,12 @@ def statistics():
     import time
     return render_template("statistics.html", images=[(g[0].decode('utf8'), g[1].decode('utf8')) for g in graphs],
                            time=str(int(time.time())))
+
+@app.route('/rm', methods=['GET'])
+def del_dictionary():
+    from dbapi import remove_dict
+    if request.method == "GET" and request.args.get('dict') is not None:
+        if remove_dict(request.args.get('dict')):
+            flash('Dictionary ' + request.args.get('dict')+ ' removed from database')
+
+    return redirect('/print_dict')
