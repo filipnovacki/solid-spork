@@ -14,7 +14,14 @@ def home():
         import dbapi
         dbapi.start_db()
 
-    return render_template("index.html")
+    from markdown2 import Markdown
+    md = Markdown()
+    with open('README.md') as readme:
+        txt = readme.read()
+        html = md.convert(txt)
+
+
+    return render_template("index.html", html=html)
 
 
 @app.route('/input', methods=['GET', 'POST'])
