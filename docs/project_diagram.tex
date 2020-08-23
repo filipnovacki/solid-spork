@@ -82,14 +82,23 @@
 \begin{tikzpicture}[scale=0.7]
 \path \route{1}{/};
 \path (p1.south)+(0.0,-5) \route{2}{/input};
-\path (p2.south)+(0.0,-5) \route{3}{/print\_dict};
+\path (p2.south)+(0.0,-5) \route{33}{/statistics};
+\path (p33.south)+(0.0,-5) \route{3}{/print\_dict};
 \background{p1}{p1}{p3}{p3}{Route};
 	\path (p1.east)+ (5,0) \app{4}{home()}{index.html};
 	\path (p2.east)+(5,0) \app{5}{add\_to\_dictionary()}{input\_data.html};
+	\path (p33.east)+(5,0) \app{34}{statistics()}{input\_data.html};
 \path (p5.north)+(0,1.3) \form{8}{InputDataForm()};
 	\path[line] (p5.north) -- node [below] {} (p8);
 	\path[line] (p8.south) -- node [above] {} (p5);
 	\path (p3.east)+(5,0) \app{6}{print\_dict()}{print\_dict.html};
+	\path (p34.north)+(0,1.3) \form{35}{graph\_drawer.py};
+	\path (p35.east)+(5,0) \dbapi{37}{get\_word\_count()};
+	\path (p37.south)+(0,-1.3) \dbapi{36}{get\_word\_count()};
+	\path[line] (p35.east) -- node [left] {} (p37);
+	\path[line] (p35.east) -- node [left] {} (p36);
+	\path[line] (p34.north) -- node [below] {} (p35);
+	\path[line] (p35.south) -- node [above] {} (p34);
 \path (p6.north)+(0,1.3) \form{7}{EnterDictForm()};
 	\path[line] (p1.east) -- node [left] {} (p4);
 	\path[line] (p6.north) -- node [below] {} (p7);

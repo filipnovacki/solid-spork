@@ -27,8 +27,6 @@
 \RequirePackage{listings} % ispis programskog koda
 \RequirePackage{times}
 \RequirePackage{courier} % za programski kod
-%\RequirePackage[backend=biber, style=ieee]{biblatex} % IEEE stil citiranja
-%\addbibresource{lib.bib}
 
 \RequirePackage{comment}
 \RequirePackage{indentfirst}

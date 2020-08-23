@@ -1,6 +1,6 @@
 \documentclass{foi}
 \usepackage[utf8]{inputenc}
-\usepackage{lipsum}
+\bibliographystyle{unsrt}
 
 \vrstaRada{\projekt} % \diplomski \projekt \seminar \zavrsni
 \title{Sustav za unos i analizu skupa riječi po rječniku - sustav zasnovan na
@@ -11,21 +11,24 @@ objektnom sustavu za upravljanje bazama podataka \texttt{ZODB}}
 \mentor{Bogdan Okreša Đurić}
 \spolMentora{\musko} % \zensko ili \musko
 \godina{2020}
-\mjesec{rujan}
+\mjesec{kolovoz}
 %\date{2017}
 %\status{redoviti}
-\indeks{35918/07–R}
+\indeks{44531/15–R}
 \smjer{Informacijski sustavi}
 \titulaProfesora{dr. sc.}
 
 \sazetak{Ovaj rad dokumentacija je projekta iz kolegija Teorija baza podataka.
 Rad pokriva sve tehničke elemente projekta, pojedinosti baze, aplikacije te
-cilja.}
+cilja. Demonstrirane su prednosti i nedostatci ovog pristupa bazama podataka te
+način na koji se razvija aplikacija s tim sustavom u pozadini.}
 
 \kljucneRijeci{ZODB, baza podataka, objektna baza podataka, flask, python,
 server, neurolingvistika, riječi}
 
 \begin{document}
+
+\nocite{*}
 
 \maketitle
 \tableofcontents
@@ -81,6 +84,12 @@ postojeće riječi kako ne bi došlo do zapisivanja duplikata.
 Osim osnovne funkcionalnosti, aplikacija generira engleski rječnik iz rječnika
 koji se nalazi u bazi podataka.
 
+Korisnik može i pregledati statistike vezane za pojedine rječnike kao što su
+zastupljenost riječi, broj riječi po duljini itd. Takvih vizualnih grafova može
+biti izrazito mnogo, no to bi u konačnici bilo samo \textit{vježbanje}
+\texttt{pandas} i \texttt{matplotlib} biblioteka, a ne upravljanje bazama
+podataka.
+
 \section{Teorijska podloga baze podataka}
 
 \texttt{ZODB} je objektno orijentiran sustav za upravljanje bazama podataka
@@ -122,7 +131,7 @@ popisivanje metoda koje se nalaze u pojedinoj klasi, no i to se izbjegava u
 ovom slučaju s obzirom na to da poslovnu logiku nije potrebno spremati u bazu
 podataka.
 
-\begin{figure}[!h]
+\begin{figure}
 \centering
 \includegraphics[scale=1]{uml_db.pdf}
 \caption{Model baze podataka prikazan pomoću UML diagrama. Kvadrati su
@@ -142,20 +151,15 @@ direktnu vezu spremljenu do njega.
 \section{Implementacija baze podataka}
 
 Kao kratki uvod u implementaciju na slici \ref{project_diagram} prikazana je
-karta projekta.
+karta projekta. Projekt je napravljen od ovih glavnih elemenata:
+\texttt{Flask} server i \texttt{ZODB} baza podataka.
 
-\begin{figure}[!h]
+\begin{figure}
 	\centering
 	\includegraphics{project_diagram.pdf}
 	\caption{Karta projekta s prikazanim značajnim točkama u kodu}
 	\label{project_diagram}
 \end{figure}
-
-Projekt je napravljen od ovih glavnih elemenata:
-\begin{itemize}
-	\item \texttt{Flask} server
-	\item ZODB baza podataka
-\end{itemize}
 
 \texttt{Flask} server poslužuje cijelu aplikaciju i prikazuje ju sučelju koje
 je prilagođeno za web preglednike. \textit{Frontend} je izrazito jednostavan -
@@ -184,6 +188,9 @@ Kao što je već napomenuto, glavne okosnice projekta su \texttt{Flask} i
 \texttt{ZODB} koji pokreću cijeli sustav. Osim tih tehnologija korišteni su i:
 \begin{itemize}
 	\item[\texttt{Jinja}] -- renderiranje \texttt{HTML}-a i \LaTeX-a
+	\item[\texttt{markdown2}] -- korišten je za pretvordbu
+		\texttt{README.md} datoteke kako bi se mogla prikazati na
+		naslovnoj stranici
 	\item[\texttt{persistent}] -- tipovi podataka za rad s bazom podataka
 	\item[\texttt{nltk}] -- većina obrade riječi i dobavljanje njihovog
 		značenja
@@ -196,6 +203,8 @@ Kao što je već napomenuto, glavne okosnice projekta su \texttt{Flask} i
 	\item[\texttt{wtforms}] -- biblioteka za kreiranje formi, integrirano s
 		\texttt{Flaskom} i \texttt{Jinjom}
 	\item[\texttt{matplotlib}] -- Pythonova biblioteka za crtanje grafova
+	\item[\texttt{padnas}] -- korišteno za upravljanje velikim skupom
+		podataka i njihovom obradom
 	\item[\LaTeX] -- služi za renderiranje PDF datoteke iz teksta
 	\item[ostalo] -- nekoliko Pythonovih biblioteka za rad s operacijskim
 		sustavom, uglavnom korišteno za uredan rad s \LaTeX-om
@@ -229,10 +238,13 @@ Također je moguće i ostaviti učitavanje kako jest te pomoću
 \texttt{JavaScripta} i \texttt{AJAX} tehnologije napraviti učitavanje stranice,
 no to je ipak tema za neki drugi projekt.
 
-Kod dohvaćanja liste riječi postoji problem ukoliko se ponovno pozove funkcija
-za prikaz rječnika, a baza podataka se u međuvremenu nije zaključala. Ukoliko
-se to dogodi, aplikacija pokušava otključati već otključanu bazu i aplikacija
-se ruši. Iz tog se razloga korisnika moli za oprez.
+Osim toga, moguće je \textit{na silu} pritisnuti neku drugu poveznicu dok
+sustav dodaje riječi i vjerojatno se ništa neće potrgati.
+
+Sustav ima jedan problem koji nije riješen, ali je vezan za \texttt{matplotlib}
+i kao takav nije glavni predmet zanimacije ovdje. Problem se javlja što se
+funkcije \texttt{matplotliba} ne pokreću na glavnoj dretvi te se iz tog razloga
+ponekad server sruši. U tom je slučaju samo potrebno ponovno pokrenuti server.
 
 \subsection{Problematika implementacije baze podataka}
 
@@ -289,7 +301,8 @@ slika \ref{ht_print}). Sve prikupljene riječi u nekom rječniku završavaju u
 \end{figure}
 
 Jednostavnim pritiskom na jedan od rječnika generira se PDF te se korisniku
-daje na preuzimanje.
+daje na preuzimanje. Pritiskom na tipku \texttt{purge} pored rječnika briše se
+odabrani rječnik.
 
 \section{Prikaz statistika}
 
@@ -313,22 +326,29 @@ Drugi graf pokazuje kojih je riječi prema duljini najviše. Odoka se primjećuj
 nešto nalik na Poissonovu razdiobu, što bi se vjerojatno i moglo provjeriti
 nekim sofisticiranijim metodama od odokativne metode.
 
-\pagestyle{plain}
+\chapter{Zaključak}
 
-%\printbibliography[title=Popis literature]
-\addcontentsline{toc}{chapter}{Popis literature}
+Objektne se baze podataka konceptualno čine kao jako dobar pokušaj u pružanju
+alternative za relacijske baze podataka i čak imaju prednosti u mnogim
+pogledima. Za \texttt{ZODB} u svijetu baza podataka zasigurno ima mjesta, ali i
+dalje je izazov odgonetnuti kako na dobar način implementirati bazu. U ovom
+projektu jasno se ističu prednosti objektne baze, ali krhkost same aplikacije
+ovdje jasno pokazuje problem pred kojim \texttt{ZODB} stoji -- nedostatak
+dokumentacije i mala zajednica koja se bavi tim bazama podataka.
+
+Veliko olakšanje koje \texttt{ZODB} pruža nad relacijskim bazama je što je
+pristup podatcima integriran u kodu bez potrebe za drugim jezicima kao što je
+\texttt{SQL} i rad nad akvim podatcima ne zahtijeva previše akcija kako bi se
+pristupilo podatcima. Takav pristup olakšava rad jer nema potrebe za slojevima
+za kompatibilnost i sve specifičnosti Pythona primjenjive su i na bazu
+direktno.
+
+
+\pagestyle{plain}
 
 \listoffigures
 \addcontentsline{toc}{chapter}{Popis slika}
 
-\listoftables
-\addcontentsline{toc}{chapter}{Popis popis tablica}
-
-\appendix
-\renewcommand{\thechapter}{\arabic{chapter}}
-
-\chapter{Prilog 1}
-
-\chapter{Prilog 2}
-
+\bibliography{lib}
+\addcontentsline{toc}{chapter}{Popis literature}
 \end{document}
