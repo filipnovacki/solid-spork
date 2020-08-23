@@ -20,9 +20,6 @@ database.
 
 ## Known 'features'
 
-- for some unknown reason, after getting dictionary in PDF the database will
-  not lock so any tasks after that require database will be impossible.
-  - workaround: kill server and rerun.
 - when dictionary is very long, `bash` command gets too long when compiling and
   breaks. This could be solved by writing `.tex` file to disk rather than
   giving `LaTeX` text as arguments to `pdflatex` command. Please don't give too
