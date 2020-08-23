@@ -24,7 +24,6 @@ def add_to_dictionary():
     if form.validate_on_submit():
         from dbapi import add_words
         flash('Adding data to dictionary {}'.format(form.dict_name.data))
-
         try:
             return redirect('/')
         except:
@@ -56,9 +55,10 @@ def print_dict():
 
 @app.route('/statistics')
 def statistics():
-    dicts = list(get_dicts())
+    dicts = (get_dicts())
+    graphs = []
     for dictionary in dicts:
-        draw_occ_graph(dictionary)
-        draw_wordlen_graph(dictionary)
+        graphs.append((draw_occ_graph(dictionary), draw_wordlen_graph(dictionary)))
     import time
-    return render_template("statistics.html", images=dicts, time=str(int(time.time())))
+    return render_template("statistics.html", images=[(g[0].decode('utf8'), g[1].decode('utf8')) for g in graphs],
+                           time=str(int(time.time())))
