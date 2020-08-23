@@ -26,4 +26,5 @@ database.
 - (possibly) jinja has no LaTeX escaping implemented so it is possible that
   some characters might be feeded into dictionary and break generating PDF. So
   far the escaped characters are: `&`, `$`, `_` and `%`.
-- new graph pictures will not load if the old ones are cached
+- sometimes there are errors with matplotlib since it is run on server and not 
+	on main thread. Therefore it's sometimes needed to restart server
