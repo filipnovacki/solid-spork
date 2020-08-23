@@ -1,11 +1,11 @@
-import ZODB
-import ZODB.FileStorage
+from ZODB import FileStorage, DB
 import persistent.list
 import persistent.mapping
 import persistent
 import transaction
-from nltk.corpus import wordnet as wn, cmudict
+from nltk.corpus import wordnet as wn, cmudict, stopwords
 from nltk.stem import WordNetLemmatizer
+from textblob import TextBlob
 
 cmudict_words = cmudict.words()
 ps = WordNetLemmatizer()
@@ -33,7 +33,7 @@ class Word(persistent.Persistent):
         except:
             self.pronunciation = None
         self.count = 1
-        print("t" if self.name == name else "f", "Word added: " + name, self.name)
+        print(" " if self.name == name else "x", "Word added: " + name + "\tO:" + self.name)
 
     def __repr__(self):
         if self.not_defined:
@@ -53,122 +53,96 @@ class Word(persistent.Persistent):
             return False
 
 
+class WordsDB(object):
+    def __init__(self, read_only=True):
+        self.storage = FileStorage.FileStorage('words.fs', read_only=read_only)
+        self.db = DB(self.storage)
+        self.connection = self.db.open()
+        self.dbroot = self.connection.root()
+
+    def close(self):
+        self.connection.close()
+        self.db.close()
+        self.storage.close()
+
+
 def add_words(text, dictionary):
-    from nltk.corpus import stopwords
-    from textblob import TextBlob
     sw = stopwords.words('english')
 
     words = [w for w in TextBlob(text).words if w not in sw]
     for word in words:
         if not str(word).isdigit():
             add_word(str(word), dictionary)
-    return 1
 
 
 def add_word(word, dictionary, in_memory=None):
     vw = Word(word.lower())
-    storage = ZODB.FileStorage.FileStorage('words.fs')
-    db = ZODB.DB(storage)
-    conn = db.open()
-    root = conn.root()
-    if dictionary not in root:
-        root[dictionary] = persistent.mapping.PersistentMapping()
-    rt = root[dictionary]
+
+    db = WordsDB(read_only=False)
+    if dictionary not in db.dbroot:
+        db.dbroot[dictionary] = persistent.mapping.PersistentMapping()
+    rt = db.dbroot[dictionary]
     if word in rt:
         rt[word].count += 1
     elif not vw.not_defined:
         rt[word] = vw
     transaction.commit()
-    conn.close()
     db.close()
 
 
 def get_words(dictionary):
-    storage = ZODB.FileStorage.FileStorage('words.fs', read_only=True)
-    db = ZODB.DB(storage)
-    conn = db.open()
-    root = conn.root()
+    db = WordsDB()
+    root = db.dbroot
     words = root[dictionary]
     for a in words:
         if not words[a].not_defined:
             yield words[a]
-    conn.close()
     db.close()
 
 
 def get_word_names(dictionary):
-    storage = ZODB.FileStorage.FileStorage('words.fs', read_only=True)
-    db = ZODB.DB(storage)
-    conn = db.open()
-    root = conn.root()
+    db = WordsDB()
+    root = db.dbroot
     words = root[dictionary]
     for a in words:
         if not words[a].not_defined:
             yield words[a].name
-    conn.close()
     db.close()
 
 
 def get_dicts_len():
-    storage = ZODB.FileStorage.FileStorage('words.fs', read_only=True)
-    db = ZODB.DB(storage)
-    conn = db.open()
-    root = conn.root()
+    db = WordsDB()
+    root = db.dbroot
     for dictionary in root:
         yield dictionary, len(root[dictionary])
-    conn.close()
-    db.close()
-
-
-def start_db():
-    storage = ZODB.FileStorage.FileStorage('words.fs')
-    db = ZODB.DB(storage)
     db.close()
 
 
 def get_dicts():
-    storage = ZODB.FileStorage.FileStorage('words.fs', read_only=True)
-    db = ZODB.DB(storage)
-    conn = db.open()
-    root = conn.root()
-    for x in root:
-        yield x
-    conn.close()
+    db = WordsDB()
+    keys = db.dbroot.keys()
     db.close()
+    return keys
 
 
 def get_word_count(dictionary):
-    storage = ZODB.FileStorage.FileStorage('words.fs', read_only=True)
-    db = ZODB.DB(storage)
-    conn = db.open()
-
-    root = conn.root()
-    if dictionary not in root:
-        conn.close()
-        db.close()
-        return None
+    db = WordsDB()
+    root = db.dbroot
     root = root[dictionary]
     words = {'word': [],
              'count': []}
     for word in root:
         words['word'] += [root[word].name]
         words['count'] += [root[word].count]
-
-    conn.close()
     db.close()
 
     return words
 
-def remove_dict(dictionary):
-    storage = ZODB.FileStorage.FileStorage('words.fs')
-    db = ZODB.DB(storage)
-    conn = db.open()
-    root = conn.root()
 
+def remove_dict(dictionary):
+    db = WordsDB(read_only=False)
+    root = db.dbroot
     if dictionary in root:
         del root[dictionary]
-
     transaction.commit()
-
-    conn.close()
     db.close()

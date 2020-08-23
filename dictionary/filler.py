@@ -51,6 +51,7 @@ def generate_pdf(tex_string, pdfname='dict.pdf'):
     os.rename('cover.pdf', pdfname)
     shutil.copy(pdfname, current)
     shutil.rmtree(temp)
+    os.chdir(current)
 
 
 def render(dictionary):

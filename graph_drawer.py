@@ -1,3 +1,6 @@
+import base64
+import io
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -21,7 +24,6 @@ def draw_occ_graph(dictionary):
         plt.grid(True)
         plt.plot(df)
 
-        import io, base64
         output = io.BytesIO()
         plt.savefig(output, format='png')
         output.seek(0)
@@ -49,7 +51,6 @@ def draw_wordlen_graph(dictionary):
         plt.grid(True)
         plt.plot(df)
 
-        import io, base64
         output = io.BytesIO()
         plt.savefig(output, format='png')
         output.seek(0)
